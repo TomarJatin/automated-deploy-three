@@ -15,10 +15,16 @@ jobs:
     - name: Install Vercel CLI
       run: npm install --global vercel@latest
 
+    - name: Build Project
+      run: |
+        npm install
+        npm run build
+        npm prune --production
+
     - name: Create Vercel Project
       run: |
         cd .
-        PROJECT_ID=$(vercel projects add ${{ github.event.repository.name }} ${{ secrets.VERCEL_ORG_ID }} --token=${{ secrets.VERCEL_TOKEN }} | sed -n 's/.*\(https:\/\/vercel.com\/[^/]*\/[^/]*\).*/\1/p')
+        PROJECT_ID=$(vercel projects add ${{ github.event.repository.name }} ${{ secrets.VERCEL_ORG_ID }} --token=${{ secrets.VERCEL_TOKEN }} --framework nextjs | sed -n 's/.*\\(https:\\/\\/vercel.com\\/[^/]*\\/[^/]*\\).*/\\1/p')
         echo "VERCEL_PROJECT_URL=$PROJECT_ID" >> $GITHUB_ENV
 
     - name: Deploy Project to Vercel
