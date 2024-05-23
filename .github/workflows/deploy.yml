@@ -24,8 +24,14 @@ jobs:
     - name: Create Vercel Project
       run: |
         cd .
-        PROJECT_ID=$(vercel projects add ${{ github.event.repository.name }} --project-settings="{ 'framework': 'nextjs' }" --token=${{ secrets.VERCEL_TOKEN }} --confirm | sed -n 's/.*\\(https:\\/\\/vercel.com\\/[^/]*\\/[^/]*\\).*/\\1/p')
+        PROJECT_ID=$(vercel projects add ${{ github.event.repository.name }} --token=${{ secrets.VERCEL_TOKEN }} --confirm | sed -n 's/.*\\(https:\\/\\/vercel.com\\/[^/]*\\/[^/]*\\).*/\\1/p')
         echo "VERCEL_PROJECT_URL=$PROJECT_ID" >> $GITHUB_ENV
+
+    - name: Set Vercel Project Settings
+      run: |
+        vercel env pull --yes ${{ secrets.VERCEL_TOKEN }}
+        vercel env set NEXT_PUBLIC_FRAMEWORK=nextjs --yes ${{ secrets.VERCEL_TOKEN }}
+        vercel env push ${{ secrets.VERCEL_TOKEN }}
 
     - name: Deploy Project to Vercel
       run: |
